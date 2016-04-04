@@ -14,6 +14,10 @@ class User: NSObject {
     var screenName: NSString?
     var profileUrl: NSURL?
     var tagline: NSString?
+    var profileBackgroundUrl: NSURL?
+    var followersCount: Int?
+    var followingCount: Int?
+    var tweetCount: Int?
     
     var dictionary: NSDictionary?
     
@@ -22,11 +26,32 @@ class User: NSObject {
         
         name = dictionary["name"] as? String
         screenName = dictionary["screen_name"] as? String
+        tagline = dictionary["description"] as? String
+        followersCount = dictionary["followers_count"] as? Int
+        followingCount = dictionary["friends_count"] as? Int
+        tweetCount = dictionary["statuses_count"] as? Int
+        
         let profileUrlString = dictionary["profile_image_url_https"] as? String
-        if let profileUrlString = profileUrlString{
+        if let profileUrlString = profileUrlString {
             profileUrl = NSURL(string: profileUrlString)
         }
-        tagline = dictionary["description"] as? String
+        
+        let profileBackgroundString = dictionary["profile_background_image_url"] as? String
+        if let profileBackgroundString = profileBackgroundString {
+            profileBackgroundUrl = NSURL(string: profileBackgroundString)
+        }
+
+    }
+
+    class func usersWithArray(dictionaries: [NSDictionary]) -> [User]{
+        var users = [User]()
+        
+        for dictionary in dictionaries{
+            let user = User(dictionary: dictionary)
+            users.append(user)
+        }
+        
+        return users
     }
     
     static let userDidLogoutNotification = "UserDidLogout"

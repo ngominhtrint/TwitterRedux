@@ -116,6 +116,8 @@ class TwitterClient: BDBOAuth1SessionManager {
     
     func currentAccount(success: (User) -> (), failure: (NSError) -> ()){
         GET("/1.1/account/verify_credentials.json", parameters: nil, progress: nil, success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            
+            print("User model: \(response)")
             let userDictionary = response as! NSDictionary
             let user = User(dictionary: userDictionary)
             success(user)
@@ -167,7 +169,48 @@ class TwitterClient: BDBOAuth1SessionManager {
         }
     }
 
+    func profileTimeLine(page: Int, success: ([Tweet]) -> (), failure: (NSError) -> ()){
+        let itemPaging = page * 20
+        let params = [
+            "count": itemPaging
+        ]
+        GET("1.1/statuses/user_timeline.json", parameters: params, progress: nil, success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let dictionaries = response as! [NSDictionary]
+            let tweets = Tweet.tweetsWithArray(dictionaries)
+            success(tweets)
+            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
+                failure(error)
+        })
+        
+    }
     
+    func mentionTimeLine(page: Int, success: ([Tweet]) -> (), failure: (NSError) -> ()){
+        let itemPaging = page * 20
+        let params = [
+            "count": itemPaging
+        ]
+        GET("1.1/statuses/mentions_timeline.json", parameters: params, progress: nil, success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let dictionaries = response as! [NSDictionary]
+            let tweets = Tweet.tweetsWithArray(dictionaries)
+            success(tweets)
+            }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
+                failure(error)
+        })
+        
+    }
+    
+    func suggestions(success: ([User]) -> (), failure: (NSError) -> ()){
+        
+        GET("1.1/users/suggestions/music.json", parameters: nil, progress: nil, success: { (task: NSURLSessionDataTask, response: AnyObject?) -> Void in
+            let dictionaries = response as! NSDictionary
+            let userDictionaries = dictionaries["users"] as! [NSDictionary]
+            let users = User.usersWithArray(userDictionaries)
+            success(users)
+        }, failure: { (task: NSURLSessionDataTask?, error: NSError) -> Void in
+            failure(error)
+        })
+        
+    }
     
 }
 

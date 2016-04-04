@@ -66,7 +66,7 @@ class TweetsViewController: UIViewController {
             if self.page == 1 {
                 self.tweets = []
                 self.tweets = tweets
-            }else{
+            } else {
                 self.tweets = self.tweets! + Array(tweets)
             }
 
